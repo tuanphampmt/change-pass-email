@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class ChangePassEmailApplication {
 	public static final String filePath = "gmail.txt";
-	public static final int numberThreads = 3;
+	public static final int numberThreads = 5;
 
 	public static void main(String[] args) throws IOException {
 		SpringApplication.run(ChangePassEmailApplication.class, args);
@@ -67,10 +67,10 @@ class WorkerThread implements Runnable {
 	private final String emailRecovery;
 	private final ChromeOptions options;
 	private final List<String> data;
-	public final int fiveSeconds = 5000;
-	public final int tenSeconds = 10000;
-	public final int threeseconds = 3000;
-	public final int twoseconds = 200;
+	public final int fiveSeconds = 7000;
+	public final int tenSeconds = 15000;
+	public final int threeseconds = 5000;
+	public final int twoseconds = 2000;
 	private final String newPassword = "Vule1234@";
 
 	public WorkerThread(String email, String password, String emailRecovery, ChromeOptions options, List<String> data) {
@@ -101,11 +101,18 @@ class WorkerThread implements Runnable {
 				passwordInput.sendKeys(password);
 				WebElement signInButton = driver.findElement(By.xpath("//div[@id='passwordNext']"));
 				signInButton.click();
-				WebElement statusPass = driver.findElement(By.xpath(
-						"//span[contains(text(), 'Mật khẩu của bạn đã thay đổi') or contains(text(), 'Your password was changed')]"));
-				Thread.sleep(twoseconds); // đợi 2 giây
-				if (!statusPass.isDisplayed()) {
-					throw new Error("Wrong password Email: " + email);
+				try {
+					Thread.sleep(twoseconds); // đợi5 giây
+					WebElement alert_error_password = driver.findElement(By.xpath(
+							"//span[contains(text(), 'Mật khẩu của bạn đã thay đổi') or contains(text(), 'Your password was changed')]"));
+					System.out.println(alert_error_password.getText());
+					if (alert_error_password.isDisplayed()) {
+						String st = email + " " + password + " " + emailRecovery;
+						data.add(st);
+						driver.quit();
+					}
+				} catch (Exception e) {
+					System.out.println("Error: " + e.getMessage() + ". " + e.getCause());
 				}
 			} catch (Exception e) {
 				System.out.println("Error: " + e.getMessage() + ". " + e.getCause());
@@ -136,13 +143,14 @@ class WorkerThread implements Runnable {
 				List<WebElement> Security = driver.findElements(By.xpath(
 						"//a[@href='security']//div[contains(text(), 'Bảo mật') or contains(text(), 'Security')]"));
 				Security.get(1).click();
-				Thread.sleep(tenSeconds); // đợi 10 giây
+				WebElement passBtn = wait.until(ExpectedConditions
+						.presenceOfElementLocated(By.xpath("//a[@aria-label='Mật khẩu' or @aria-label='Password']")));
+
 				// Tạo đối tượng Actions
 				Actions actions = new Actions(driver);
-				WebElement passBtn = driver
-						.findElement(By.xpath("//a[@aria-label='Mật khẩu' or @aria-label='Password']"));
 				actions.moveToElement(passBtn).perform();
 				passBtn.click();
+
 				try {
 					Thread.sleep(tenSeconds);
 					WebElement passwordInput = driver.findElement(By.xpath("//input[@type='password']"));
