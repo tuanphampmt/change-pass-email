@@ -102,7 +102,7 @@ class WorkerThread implements Runnable {
 				WebElement signInButton = driver.findElement(By.xpath("//div[@id='passwordNext']"));
 				signInButton.click();
 				try {
-					Thread.sleep(twoseconds); // đợi5 giây
+					Thread.sleep(threeseconds); // đợi5 giây
 					WebElement alert_error_password = driver.findElement(By.xpath(
 							"//span[contains(text(), 'Mật khẩu của bạn đã thay đổi') or contains(text(), 'Your password was changed')]"));
 					System.out.println(alert_error_password.getText());
