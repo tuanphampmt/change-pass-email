@@ -71,7 +71,7 @@ class WorkerThread implements Runnable {
 	public final int tenSeconds = 15000;
 	public final int threeseconds = 5000;
 	public final int twoseconds = 2000;
-	private final String newPassword = "Vule1234@";
+	private final String newPassword = "Maiyeu1234@";
 
 	public WorkerThread(String email, String password, String emailRecovery, ChromeOptions options, List<String> data) {
 		this.email = email;
